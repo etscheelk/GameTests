@@ -1,7 +1,11 @@
 extends CharacterBody2D
 
 
-@export var speed : float = 200.0
+@export var walkSpeed : float = 100.0
+@export var fastWalkSpeed : float = 150.0
+@export var jogSpeed : float = 200.0
+@export var runSpeed : float = 250.0
+
 @export var jump_velocity : float = -150.0
 @export var double_jump_velocity : float = -100.0
 
@@ -15,10 +19,13 @@ var animation_locked : bool = false
 var direction: Vector2 = Vector2.ZERO
 var was_in_air : bool = false
 
-func _physics_process(delta):
+enum states {IDLE, RUNNING, JUMPING, MANTLING}
+var state : states = states.IDLE
+
+func _physics_process(_delta):
 	# Add the gravity.
 	if not is_on_floor():
-		velocity.y += gravity * delta
+		velocity.y += gravity * _delta
 		was_in_air = true
 	else:
 		has_double_jumped = false
@@ -41,14 +48,30 @@ func _physics_process(delta):
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	direction = Input.get_vector("left", "right", "up", "down");
 	if direction.x != 0 && animated_sprite.animation != "jump_end":
-		velocity.x = direction.x * speed
+		velocity.x = direction.x * walkSpeed
 	else:
-		velocity.x = move_toward(velocity.x, 0, speed)
+		velocity.x = move_toward(velocity.x, 0, walkSpeed)
 
 	move_and_slide()
 	update_animation()
 	update_facing_direction()
 	
+
+func move():
+	if is_on_floor():
+		friction()
+			
+	else: # Player is in air
+		pass
+	
+	
+	
+	
+func move_accel():
+	pass
+	
+func friction():
+	pass
 
 func update_animation():
 	if not animation_locked:
