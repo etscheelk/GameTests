@@ -11,6 +11,8 @@ extends CharacterBody2D
 
 @onready var animated_sprite : AnimatedSprite2D = $AnimatedSprite2D
 
+var deltaFrameTime : float = 0
+
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 var has_double_jumped : bool = false
@@ -22,10 +24,12 @@ var was_in_air : bool = false
 enum states {IDLE, RUNNING, JUMPING, MANTLING}
 var state : states = states.IDLE
 
-func _physics_process(_delta):
+func _physics_process(delta):
+	deltaFrameTime = delta
+	
 	# Add the gravity.
 	if not is_on_floor():
-		velocity.y += gravity * _delta
+		velocity.y += gravity * delta
 		was_in_air = true
 	else:
 		has_double_jumped = false
@@ -50,7 +54,10 @@ func _physics_process(_delta):
 	if direction.x != 0 && animated_sprite.animation != "jump_end":
 		velocity.x = direction.x * walkSpeed
 	else:
-		velocity.x = move_toward(velocity.x, 0, walkSpeed)
+		# velocity.x = move_toward(velocity.x, 0, walkSpeed)
+		pass
+		
+	friction()
 
 	move_and_slide()
 	update_animation()
@@ -58,11 +65,9 @@ func _physics_process(_delta):
 	
 
 func move():
-	if is_on_floor():
-		friction()
+	friction()
 			
-	else: # Player is in air
-		pass
+	
 	
 	
 	
@@ -71,7 +76,23 @@ func move_accel():
 	pass
 	
 func friction():
-	pass
+	var speed : float = velocity.length()
+	
+	if (speed < 1):
+		velocity.x = 0
+		return
+		
+	var drop : float = 0
+	var control : float = 20 if speed < 20 else speed
+	drop += control * 6 * deltaFrameTime
+	
+	var newSpeed : float = speed - drop
+	if (newSpeed < 0):
+		newSpeed = 0
+	
+	newSpeed /= speed 
+	velocity *= newSpeed
+	print(velocity)
 
 func update_animation():
 	if not animation_locked:
