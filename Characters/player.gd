@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 @export var stopSpeed : float = 20
-@export var groundFriction : float = 6
+@export var groundFriction : float = 10
 
 @export var walkSpeed : float = 100.0
 @export var fastWalkSpeed : float = 150.0
@@ -53,13 +53,13 @@ func _physics_process(delta):
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	direction = Input.get_vector("left", "right", "up", "down");
-	if direction.x != 0 && animated_sprite.animation != "jump_end":
-		velocity.x = direction.x * walkSpeed
-	else:
-		# velocity.x = move_toward(velocity.x, 0, walkSpeed)
-		pass
-		
+#	if (animated_sprite.animation != "jump_end"):
+#		# velocity.x = direction.x * walkSpeed
 	friction()
+	accel(Vector2(direction.x, 0), walkSpeed, 12)
+#	else:
+#		# velocity.x = move_toward(velocity.x, 0, walkSpeed)
+#		pass
 
 	move_and_slide()
 	update_animation()
@@ -74,27 +74,59 @@ func move():
 	
 	
 	
-func move_accel():
-	pass
+func accel(wishdir : Vector2, wishSpeed : float, accel : float):
+	var addspeed : float
+	var accelspeed : float
+	var currentSpeed : float
+	
+	currentSpeed = velocity.dot(wishdir)
+	addspeed = wishSpeed - currentSpeed
+	if (addspeed <= 0):
+		return
+		
+	accelspeed = accel * deltaFrameTime * wishSpeed
+	if (accelspeed > addspeed):
+		accelspeed = addspeed
+		
+	velocity += wishdir * accelspeed
 	
 func friction():
-	var speed : float = velocity.length()
+	var currVelocity : Vector2
+	var speed : float
+	var newSpeed : float
+	var control : float
 	
-	if (speed < stopSpeed):
+	var drop : float
+	
+	currVelocity = velocity
+	
+	
+	# If I'm on the ground, or on a ramp, ignore vertical velocity
+	if is_on_floor():
+		currVelocity.y = 0
+		
+	speed = currVelocity.length()
+	
+	if (speed < 2):
 		velocity.x = 0
 		return
 	
-	if is_on_floor():
-		var drop : float = 0
-		var control : float = stopSpeed if speed < stopSpeed else speed
-		drop += control * groundFriction * deltaFrameTime
-		
-		var newSpeed : float = speed - drop
-		if (newSpeed < 0):
-			newSpeed = 0
+	drop = 0
 	
-		newSpeed /= speed 
-		velocity *= newSpeed
+	if is_on_floor():
+		control = stopSpeed if speed < stopSpeed else speed
+		drop += control * groundFriction * deltaFrameTime
+	
+	else:
+		pass
+	
+	# Scale the velocity
+	newSpeed = speed - drop
+	if (newSpeed < 0):
+		newSpeed = 0
+
+	newSpeed /= speed 
+	velocity *= newSpeed
 	print(velocity)
 
 func update_animation():
