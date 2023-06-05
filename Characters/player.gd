@@ -1,5 +1,7 @@
 extends CharacterBody2D
 
+@export var stopSpeed : float = 20
+@export var groundFriction : float = 6
 
 @export var walkSpeed : float = 100.0
 @export var fastWalkSpeed : float = 150.0
@@ -78,20 +80,21 @@ func move_accel():
 func friction():
 	var speed : float = velocity.length()
 	
-	if (speed < 1):
+	if (speed < stopSpeed):
 		velocity.x = 0
 		return
+	
+	if is_on_floor():
+		var drop : float = 0
+		var control : float = stopSpeed if speed < stopSpeed else speed
+		drop += control * groundFriction * deltaFrameTime
 		
-	var drop : float = 0
-	var control : float = 20 if speed < 20 else speed
-	drop += control * 6 * deltaFrameTime
+		var newSpeed : float = speed - drop
+		if (newSpeed < 0):
+			newSpeed = 0
 	
-	var newSpeed : float = speed - drop
-	if (newSpeed < 0):
-		newSpeed = 0
-	
-	newSpeed /= speed 
-	velocity *= newSpeed
+		newSpeed /= speed 
+		velocity *= newSpeed
 	print(velocity)
 
 func update_animation():
