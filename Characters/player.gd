@@ -71,25 +71,44 @@ func _physics_process(delta):
 func move() -> void:
 	var max : float = 100
 	if (abs(velocity.x) > max && sign(velocity.x) == direction.x):
-		approachSpeed(velocity.x, max * direction.x, -400.0)
+		approachSpeed(max * direction.x, 400.0)
+		print("case 1")
 	else:
-		approachSpeed(velocity.x, max * direction.x, 1000.0)
+		approachSpeed(max * direction.x, 800.0)
+		print("case 2")
 		
-		
+	
+	
 	print(velocity)
 	
 
 
-func approachSpeed(currSpeed : float, targetSpeed : float, accel : float) -> float: 
+func approachSpeed(targetSpeed : float, accel : float) -> void:
+	var speed : float = velocity.x
+	var speedDelta : float
 	
 	
-	velocity.x += accel * deltaFrameTime
+	if (speed >= targetSpeed):
+		speedDelta = -accel * deltaFrameTime
+	else:
+		speedDelta =  accel * deltaFrameTime
 	
-	if (velocity.x > targetSpeed):
-		velocity.x = targetSpeed
 	
 	
-	return 0.0
+#	if (abs(speedDelta) < 0.05):
+#		speedDelta = 0
+		
+	speed += speedDelta
+	
+#	if (sign(speed) != sign(velocity.x)):
+#		speed = 0
+	
+	velocity.x = speed
+#	if (abs(velocity.x) < 2):
+#		velocity.x = 0
+#		return
+		
+	
 	
 func accel(wishdir : Vector2, wishSpeed : float, accel : float):
 	var addspeed : float
