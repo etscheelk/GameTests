@@ -20,7 +20,7 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 var has_double_jumped : bool = false
 var animation_locked : bool = false
 
-var direction : Vector2 = Vector2.ZERO
+var inputDirection : Vector2 = Vector2.ZERO
 var was_in_air : bool = false
 
 enum states {IDLE, RUNNING, JUMPING, MANTLING}
@@ -51,13 +51,16 @@ func _physics_process(delta):
 			pass
 	
 
-	# Get the input direction and handle the movement/deceleration.
+	# Get the input inputDirection and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
-	direction = Input.get_vector("left", "right", "up", "down");
+	inputDirection = sign(Input.get_vector("left", "right", "up", "down"));
+	
+		
+	
 #	if (animated_sprite.animation != "jump_end"):
-#		# velocity.x = direction.x * walkSpeed
+#		# velocity.x = inputDirection.x * walkSpeed
 #	friction()
-#	accel(Vector2(direction.x, 0), 320, 500)
+#	accel(Vector2(inputDirection.x, 0), 320, 500)
 	move()
 #	else:
 #		# velocity.x = move_toward(velocity.x, 0, walkSpeed)
@@ -65,16 +68,16 @@ func _physics_process(delta):
 
 	move_and_slide()
 	update_animation()
-	update_facing_direction()
+	update_facing_inputDirection()
 	
 
 func move() -> void:
 	var max : float = 100
-	if (abs(velocity.x) > max && sign(velocity.x) == direction.x):
-		approachSpeed(max * direction.x, 400.0)
+	if (abs(velocity.x) > max && sign(velocity.x) == inputDirection.x):
+		approachSpeed(max * inputDirection.x, 400.0)
 		print("case 1")
 	else:
-		approachSpeed(max * direction.x, 800.0)
+		approachSpeed(max * inputDirection.x, 800.0)
 		print("case 2")
 		
 	
@@ -85,8 +88,13 @@ func move() -> void:
 
 func approachSpeed(targetSpeed : float, accel : float) -> void:
 	var speed : float = velocity.x
+	var minSpeed : float = 0.01 * targetSpeed
 	var speedDelta : float
 	
+	# If user is intending to stop and speed is low enough, set to 0
+	if (inputDirection.x == 0 && speed < minSpeed):
+		velocity.x = 0
+		return
 	
 	if (speed >= targetSpeed):
 		speedDelta = -accel * deltaFrameTime
@@ -171,15 +179,15 @@ func update_animation():
 			animated_sprite.play("jump_loop")
 		else:
 			# update to idle or run animation
-			if direction.x != 0:
+			if inputDirection.x != 0:
 				animated_sprite.play("run")
 			else:
 				animated_sprite.play("idle")
 	
-func update_facing_direction():
-	if direction.x > 0:
+func update_facing_inputDirection():
+	if inputDirection.x > 0:
 		animated_sprite.flip_h = false
-	elif direction.x < 0:
+	elif inputDirection.x < 0:
 		animated_sprite.flip_h = true
 		
 func jump():
