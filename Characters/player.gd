@@ -20,7 +20,7 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 var has_double_jumped : bool = false
 var animation_locked : bool = false
 
-var direction: Vector2 = Vector2.ZERO
+var direction : Vector2 = Vector2.ZERO
 var was_in_air : bool = false
 
 enum states {IDLE, RUNNING, JUMPING, MANTLING}
@@ -56,8 +56,9 @@ func _physics_process(delta):
 	direction = Input.get_vector("left", "right", "up", "down");
 #	if (animated_sprite.animation != "jump_end"):
 #		# velocity.x = direction.x * walkSpeed
-	friction()
-	accel(Vector2(direction.x, 0), 320, 10)
+#	friction()
+#	accel(Vector2(direction.x, 0), 320, 500)
+	move()
 #	else:
 #		# velocity.x = move_toward(velocity.x, 0, walkSpeed)
 #		pass
@@ -67,13 +68,28 @@ func _physics_process(delta):
 	update_facing_direction()
 	
 
-func move():
-	friction()
-			
+func move() -> void:
+	var max : float = 100
+	if (abs(velocity.x) > max && sign(velocity.x) == direction.x):
+		approachSpeed(velocity.x, max * direction.x, -400.0)
+	else:
+		approachSpeed(velocity.x, max * direction.x, 1000.0)
+		
+		
+	print(velocity)
+	
+
+
+func approachSpeed(currSpeed : float, targetSpeed : float, accel : float) -> float: 
 	
 	
+	velocity.x += accel * deltaFrameTime
+	
+	if (velocity.x > targetSpeed):
+		velocity.x = targetSpeed
 	
 	
+	return 0.0
 	
 func accel(wishdir : Vector2, wishSpeed : float, accel : float):
 	var addspeed : float
