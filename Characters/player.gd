@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
-@export var stopSpeed : float = 20
-@export var groundFriction : float = 10
+@export var stopSpeed : float = 100
+@export var groundFriction : float = 6
 
 @export var walkSpeed : float = 100.0
 @export var fastWalkSpeed : float = 150.0
@@ -47,7 +47,8 @@ func _physics_process(delta):
 			jump()
 		elif not has_double_jumped:
 			# Then double jump in air
-			double_jump()
+#			double_jump()
+			pass
 	
 
 	# Get the input direction and handle the movement/deceleration.
@@ -56,7 +57,7 @@ func _physics_process(delta):
 #	if (animated_sprite.animation != "jump_end"):
 #		# velocity.x = direction.x * walkSpeed
 	friction()
-	accel(Vector2(direction.x, 0), walkSpeed, 12)
+	accel(Vector2(direction.x, 0), 320, 10)
 #	else:
 #		# velocity.x = move_toward(velocity.x, 0, walkSpeed)
 #		pass
