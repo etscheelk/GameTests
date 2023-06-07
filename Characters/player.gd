@@ -8,11 +8,23 @@ extends CharacterBody2D
 @export var jogSpeed : float = 200.0
 @export var runSpeed : float = 250.0
 
+@export var groundAcceleration : float = 200
+@export var groundDeceleration : float = 600
+
+@export var maxTurnSpeed : float = 80
+@export var maxAirTurnSpeed : float = 80
+
+@export var maxAirAcceleration : float = 50
+@export var maxAirDeceleration : float = 50
+
+
+
 @export var jump_velocity : float = -150.0
 @export var double_jump_velocity : float = -100.0
 
 @onready var animated_sprite : AnimatedSprite2D = $AnimatedSprite2D
 
+var desiredVelocity : Vector2 = Vector2.ZERO
 var deltaFrameTime : float = 0
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
@@ -25,6 +37,13 @@ var was_in_air : bool = false
 
 enum states {IDLE, RUNNING, JUMPING, MANTLING}
 var state : states = states.IDLE
+
+var sprinting : bool = false
+
+func _process(delta):
+	desiredVelocity.x = sign(inputDirection.x) * 100
+	if sprinting:
+		desiredVelocity.x *= 2
 
 func _physics_process(delta):
 	deltaFrameTime = delta
@@ -50,10 +69,15 @@ func _physics_process(delta):
 #			double_jump()
 			pass
 	
+	if Input.is_action_pressed("up"):
+		sprinting = true
+	if Input.is_action_just_released("up"):
+		sprinting = false
+	
 
 	# Get the input inputDirection and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
-	inputDirection = sign(Input.get_vector("left", "right", "up", "down"));
+	inputDirection = Input.get_vector("left", "right", "up", "down");
 	
 		
 	
@@ -62,9 +86,9 @@ func _physics_process(delta):
 #	friction()
 #	accel(Vector2(inputDirection.x, 0), 320, 500)
 	move()
-#	else:
-#		# velocity.x = move_toward(velocity.x, 0, walkSpeed)
-#		pass
+	
+#	velocity.x = move_toward(velocity.x, 0, walkSpeed)
+	
 
 	move_and_slide()
 	update_animation()
@@ -72,50 +96,42 @@ func _physics_process(delta):
 	
 
 func move() -> void:
-	var max : float = 100
-	if (abs(velocity.x) > max && sign(velocity.x) == inputDirection.x):
-		approachSpeed(max * inputDirection.x, 400.0)
-		print("case 1")
-	else:
-		approachSpeed(max * inputDirection.x, 800.0)
-		print("case 2")
-		
+	var onGround : bool = is_on_floor()
 	
+	var acceleration = groundAcceleration if onGround else maxAirAcceleration
+	var deceleration = groundDeceleration if onGround else maxAirDeceleration
+	var turnSpeed    = maxTurnSpeed       if onGround else maxAirTurnSpeed
+	
+	
+	var speedDelta : float = 0
+	if (inputDirection.x != 0):
+		if (sign(inputDirection.x) != sign(velocity.x)):
+			speedDelta = turnSpeed * deltaFrameTime * (2 if sprinting else 1)
+		else:
+			speedDelta = acceleration * deltaFrameTime * (2 if sprinting else 1)
+	else:
+		speedDelta = deceleration * deltaFrameTime
+		
+	velocity.x = move_toward(velocity.x, desiredVelocity.x, speedDelta)
 	
 	print(velocity)
 	
+	
 
-
-func approachSpeed(targetSpeed : float, accel : float) -> void:
-	var speed : float = velocity.x
-	var minSpeed : float = 0.01 * targetSpeed
-	var speedDelta : float
-	
-	# If user is intending to stop and speed is low enough, set to 0
-	if (inputDirection.x == 0 && speed < minSpeed):
-		velocity.x = 0
-		return
-	
-	if (speed >= targetSpeed):
-		speedDelta = -accel * deltaFrameTime
-	else:
-		speedDelta =  accel * deltaFrameTime
-	
-	
-	
-#	if (abs(speedDelta) < 0.05):
-#		speedDelta = 0
-		
-	speed += speedDelta
-	
-#	if (sign(speed) != sign(velocity.x)):
-#		speed = 0
-	
-	velocity.x = speed
-#	if (abs(velocity.x) < 2):
-#		velocity.x = 0
-#		return
-		
+#func approachSpeed(targetSpeed : float, accel : float) -> void:
+#	var speed : float = abs(velocity.x)
+#	var minSpeed : float = 0.01 * targetSpeed
+#	var speedDelta : float
+#
+#	if (inputDirection.x != 0):
+#		if (inputDirection.x != sign(velocity.x)):
+#			speedDelta = 200 * deltaFrameTime
+#		else:
+#			speedDelta = accel * deltaFrameTime
+#	else:
+#		speedDelta = accel * 0.5 * deltaFrameTime
+#
+#	velocity.x = move_toward(velocity.x, targetSpeed * inputDirection.x, speedDelta)
 	
 	
 func accel(wishdir : Vector2, wishSpeed : float, accel : float):
