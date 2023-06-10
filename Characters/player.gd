@@ -23,6 +23,7 @@ extends CharacterBody2D
 @export var double_jump_velocity : float = -100.0
 
 @onready var animated_sprite : AnimatedSprite2D = $AnimatedSprite2D
+@onready var collider : CollisionShape2D = $CollisionShape2D
 
 var desiredVelocity : Vector2 = Vector2.ZERO
 var deltaFrameTime : float = 0
@@ -41,6 +42,8 @@ var state : states = states.IDLE
 var sprinting : bool = false
 
 func _process(delta):
+	inputDirection = Input.get_vector("left", "right", "up", "down");
+	
 	desiredVelocity.x = sign(inputDirection.x) * 100
 	if sprinting:
 		desiredVelocity.x *= 2
@@ -77,7 +80,7 @@ func _physics_process(delta):
 
 	# Get the input inputDirection and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
-	inputDirection = Input.get_vector("left", "right", "up", "down");
+#	inputDirection = Input.get_vector("left", "right", "up", "down");
 	
 		
 	
@@ -225,3 +228,9 @@ func land():
 func _on_animated_sprite_2d_animation_finished():
 	if (["jump_end", "jump_start", "jump_double"].has(animated_sprite.animation)):
 		animation_locked = false
+
+
+
+
+func _on_tile_map_player_touching_background():
+	pass # Replace with function body.
