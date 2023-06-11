@@ -17,13 +17,15 @@ extends CharacterBody2D
 @export var maxAirAcceleration : float = 50
 @export var maxAirDeceleration : float = 50
 
-
-
 @export var jump_velocity : float = -150.0
 @export var double_jump_velocity : float = -100.0
 
 @onready var animated_sprite : AnimatedSprite2D = $AnimatedSprite2D
 @onready var collider : CollisionShape2D = $CollisionShape2D
+
+@onready var tileMap : TileMap = $"../TileMap"
+
+var canClimb : bool = false
 
 var desiredVelocity : Vector2 = Vector2.ZERO
 var deltaFrameTime : float = 0
@@ -41,12 +43,18 @@ var state : states = states.IDLE
 
 var sprinting : bool = false
 
+
+func _ready():
+	pass
+
+
 func _process(delta):
 	inputDirection = Input.get_vector("left", "right", "up", "down");
 	
 	desiredVelocity.x = sign(inputDirection.x) * 100
 	if sprinting:
 		desiredVelocity.x *= 2
+
 
 func _physics_process(delta):
 	deltaFrameTime = delta
@@ -77,6 +85,14 @@ func _physics_process(delta):
 	if Input.is_action_just_released("up"):
 		sprinting = false
 	
+	# Retrieve the tilemap coordinate at the players center
+	var tileMapCoord : Vector2i = tileMap.local_to_map(position)
+	
+	var tile : TileData = tileMap.get_cell_tile_data(1, tileMapCoord)
+	
+	canClimb = tile != null
+	print(canClimb)
+	
 
 	# Get the input inputDirection and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
@@ -88,11 +104,10 @@ func _physics_process(delta):
 #		# velocity.x = inputDirection.x * walkSpeed
 #	friction()
 #	accel(Vector2(inputDirection.x, 0), 320, 500)
-	move()
 	
 #	velocity.x = move_toward(velocity.x, 0, walkSpeed)
-	
 
+	move()
 	move_and_slide()
 	update_animation()
 	update_facing_inputDirection()
@@ -104,6 +119,10 @@ func move() -> void:
 	var acceleration = groundAcceleration if onGround else maxAirAcceleration
 	var deceleration = groundDeceleration if onGround else maxAirDeceleration
 	var turnSpeed    = maxTurnSpeed       if onGround else maxAirTurnSpeed
+	
+	if inputDirection.y == -1 && canClimb:
+		climb()
+		return
 	
 	
 	var speedDelta : float = 0
@@ -117,82 +136,15 @@ func move() -> void:
 		
 	velocity.x = move_toward(velocity.x, desiredVelocity.x, speedDelta)
 	
-	print(velocity)
+#	print(velocity)
 	
+func climb() -> void:
+	position.y -= 20
 	
+	pass
 
-#func approachSpeed(targetSpeed : float, accel : float) -> void:
-#	var speed : float = abs(velocity.x)
-#	var minSpeed : float = 0.01 * targetSpeed
-#	var speedDelta : float
-#
-#	if (inputDirection.x != 0):
-#		if (inputDirection.x != sign(velocity.x)):
-#			speedDelta = 200 * deltaFrameTime
-#		else:
-#			speedDelta = accel * deltaFrameTime
-#	else:
-#		speedDelta = accel * 0.5 * deltaFrameTime
-#
-#	velocity.x = move_toward(velocity.x, targetSpeed * inputDirection.x, speedDelta)
-	
-	
-func accel(wishdir : Vector2, wishSpeed : float, accel : float):
-	var addspeed : float
-	var accelspeed : float
-	var currentSpeed : float
-	
-	currentSpeed = velocity.dot(wishdir)
-	addspeed = wishSpeed - currentSpeed
-	if (addspeed <= 0):
-		return
-		
-	accelspeed = accel * deltaFrameTime * wishSpeed
-	if (accelspeed > addspeed):
-		accelspeed = addspeed
-		
-	velocity += wishdir * accelspeed
-	
-func friction():
-	var currVelocity : Vector2
-	var speed : float
-	var newSpeed : float
-	var control : float
-	
-	var drop : float
-	
-	currVelocity = velocity
-	
-	
-	# If I'm on the ground, or on a ramp, ignore vertical velocity
-	if is_on_floor():
-		currVelocity.y = 0
-		
-	speed = currVelocity.length()
-	
-	if (speed < 2):
-		velocity.x = 0
-		return
-	
-	drop = 0
-	
-	if is_on_floor():
-		control = stopSpeed if speed < stopSpeed else speed
-		drop += control * groundFriction * deltaFrameTime
-	
-	else:
-		pass
-	
-	# Scale the velocity
-	newSpeed = speed - drop
-	if (newSpeed < 0):
-		newSpeed = 0
 
-	newSpeed /= speed 
-	velocity *= newSpeed
-	print(velocity)
-
-func update_animation():
+func update_animation() -> void:
 	if not animation_locked:
 		if not is_on_floor():
 			animated_sprite.play("jump_loop")
@@ -203,34 +155,36 @@ func update_animation():
 			else:
 				animated_sprite.play("idle")
 	
-func update_facing_inputDirection():
+	
+func update_facing_inputDirection() -> void:
 	if inputDirection.x > 0:
 		animated_sprite.flip_h = false
 	elif inputDirection.x < 0:
 		animated_sprite.flip_h = true
+	
 		
-func jump():
+func jump() -> void:
 	velocity.y = jump_velocity
 	animated_sprite.play("jump_start")
 	animation_locked = true
 	
-func double_jump():
+	
+func double_jump() -> void:
 	velocity.y = double_jump_velocity
 	animated_sprite.play("jump_double")
 	animation_locked = true
 	has_double_jumped = true
 	
-func land():
+	
+func land() -> void:
 	animated_sprite.play("jump_end")
 	animation_locked = true
 
 
-func _on_animated_sprite_2d_animation_finished():
+func _on_animated_sprite_2d_animation_finished() -> void:
 	if (["jump_end", "jump_start", "jump_double"].has(animated_sprite.animation)):
 		animation_locked = false
-
-
-
+		
 
 func _on_tile_map_player_touching_background():
 	pass # Replace with function body.

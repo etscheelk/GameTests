@@ -307,10 +307,12 @@ sprite_frames = SubResource("SpriteFrames_3583o")
 animation = &"idle"
 autoplay = "idle"
 centered = false
+metadata/_edit_lock_ = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, 2)
 shape = SubResource("CapsuleShape2D_g3paf")
+metadata/_edit_lock_ = true
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
 tree_root = SubResource("AnimationRootNode_q3ubg")

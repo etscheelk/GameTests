@@ -7,7 +7,7 @@
 
 [node name="TestLevel" type="Node2D"]
 
-[node name="TileMap" type="TileMap" parent="."]
+[node name="TileMap" type="TileMap" parent="." node_paths=PackedStringArray("pos")]
 position = Vector2(32, -32)
 tile_set = ExtResource("1_tyetv")
 format = 2
@@ -22,6 +22,7 @@ layer_1/y_sort_origin = 0
 layer_1/z_index = 0
 layer_1/tile_data = PackedInt32Array(393223, 327680, 11, 458758, 262144, 10, 524294, 262144, 11, 458759, 327680, 10, 524295, 327680, 11, 458760, 262144, 10, 524296, 262144, 11, 458761, 327680, 10, 524297, 327680, 11, 393224, 262144, 11, 393225, 327680, 11, 196614, 262144, 10, 262150, 262144, 11, 327686, 262144, 10, 196615, 327680, 10, 262151, 327680, 11, 327687, 327680, 10, 196616, 262144, 10, 262152, 262144, 11, 327688, 262144, 10, 196617, 327680, 10, 262153, 327680, 11, 327689, 327680, 10, 393222, 262144, 11)
 script = ExtResource("2_pmdqp")
+pos = NodePath("../Player/RemoteTransform2D")
 
 [node name="Player" parent="." instance=ExtResource("2_b8k81")]
 position = Vector2(78, 35)
