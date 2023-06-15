@@ -139,7 +139,8 @@ func move() -> void:
 #	print(velocity)
 	
 func climb() -> void:
-	position.y -= 20
+#	position.y -= 20
+	velocity.y = -20
 	
 	pass
 
