@@ -26,6 +26,7 @@ extends CharacterBody2D
 @onready var tileMap : TileMap = $"../TileMap"
 
 var canClimb : bool = false
+@onready var wallClimbTimer : Timer = $"(Timer) WallClimbing"
 
 var desiredVelocity : Vector2 = Vector2.ZERO
 var deltaFrameTime : float = 0
@@ -139,6 +140,10 @@ func move() -> void:
 #	print(velocity)
 	
 func climb() -> void:
+	if wallClimbTimer.is_stopped() and is_on_floor():
+		wallClimbTimer.start()
+	
+	
 #	position.y -= 20
 	velocity.y = -20
 	
