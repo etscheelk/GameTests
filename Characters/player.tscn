@@ -313,6 +313,7 @@ metadata/_edit_lock_ = true
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, 2)
 shape = SubResource("CapsuleShape2D_g3paf")
+debug_color = Color(0, 0.6, 0.7, 0.42)
 metadata/_edit_lock_ = true
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
@@ -325,10 +326,10 @@ anim_player = NodePath("../AnimationPlayer")
 wait_time = 0.5
 one_shot = true
 
-[node name="Feet Marker2D" type="Marker2D" parent="."]
-position = Vector2(0, 24)
+[node name="FeetMarker2D" type="Marker2D" parent="."]
+position = Vector2(0, 21)
 
-[node name="Hands Marker2D" type="Marker2D" parent="."]
+[node name="HandsMarker2D" type="Marker2D" parent="."]
 position = Vector2(8, 3)
 
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]

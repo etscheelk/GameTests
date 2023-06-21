@@ -23,7 +23,11 @@ extends CharacterBody2D
 @onready var animated_sprite : AnimatedSprite2D = $AnimatedSprite2D
 @onready var collider : CollisionShape2D = $CollisionShape2D
 
-@onready var tileMap : TileMap = $"../TileMap"
+@onready var feetMarker : Vector2 = $"HandsMarker2D".position
+
+@export var tileMapsNode : Node
+var groundTileMap : TileMap # = tileMapsNode.GroundTileMap
+var backgroundTileMap : TileMap # = tileMapsNode.BackgroundTileMap
 
 # z_index controls tile and player draw. Lower means more behind. Make sure to check the player is in front
 # Must also consider collision_layer and mask
@@ -49,7 +53,11 @@ var sprinting : bool = false
 
 
 func _ready():
-	pass
+	if tileMapsNode:
+		groundTileMap = tileMapsNode.get_node("GroundTileMap")
+		backgroundTileMap = tileMapsNode.get_node("BackgroundTileMap")
+	else:
+		pass
 
 
 func _process(delta):
@@ -90,10 +98,10 @@ func _physics_process(delta):
 		sprinting = false
 	
 	# Retrieve the tilemap coordinate at the players center
-	var tileMapCoord : Vector2i = tileMap.local_to_map(position)
+	var tileMapCoord : Vector2i = groundTileMap.local_to_map(feetMarker + position)
 	
 	# layer, coord
-	var tile : TileData = tileMap.get_cell_tile_data(1, tileMapCoord)
+	var tile : TileData = groundTileMap.get_cell_tile_data(1, tileMapCoord)
 	
 	canClimb = tile != null
 	print(canClimb)

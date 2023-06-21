@@ -2,7 +2,7 @@ extends TileMap
 
 signal playerTouchingBackground
 
-@onready var player : CharacterBody2D = $"../Player"
+@onready var player : CharacterBody2D = $"../../Player"
 @export var pos : RemoteTransform2D
 
 # Called when the node enters the scene tree for the first time.

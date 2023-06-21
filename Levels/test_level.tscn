@@ -7,10 +7,9 @@
 
 [node name="TestLevel" type="Node2D"]
 
-[node name="Tilemaps" type="Node" parent="."]
+[node name="TileMaps" type="Node" parent="."]
 
-[node name="TileMap" type="TileMap" parent="." node_paths=PackedStringArray("pos")]
-position = Vector2(32, -32)
+[node name="GroundTileMap" type="TileMap" parent="TileMaps" node_paths=PackedStringArray("pos")]
 tile_set = ExtResource("1_tyetv")
 format = 2
 layer_0/name = "Ground"
@@ -24,13 +23,22 @@ layer_1/y_sort_origin = 0
 layer_1/z_index = 0
 layer_1/tile_data = PackedInt32Array(393223, 327680, 11, 458758, 262144, 10, 524294, 262144, 11, 458759, 327680, 10, 524295, 327680, 11, 458760, 262144, 10, 524296, 262144, 11, 458761, 327680, 10, 524297, 327680, 11, 393224, 262144, 11, 393225, 327680, 11, 196614, 262144, 10, 262150, 262144, 11, 327686, 262144, 10, 196615, 327680, 10, 262151, 327680, 11, 327687, 327680, 10, 196616, 262144, 10, 262152, 262144, 11, 327688, 262144, 10, 196617, 327680, 10, 262153, 327680, 11, 327689, 327680, 10, 393222, 262144, 11)
 script = ExtResource("2_pmdqp")
-pos = NodePath("../Player/RemoteTransform2D")
+pos = NodePath("../../Player/RemoteTransform2D")
 
-[node name="Player" parent="." instance=ExtResource("2_b8k81")]
+[node name="BackgroundTileMap" type="TileMap" parent="TileMaps"]
+z_index = -1
+tile_set = ExtResource("1_tyetv")
+format = 2
+layer_0/name = "Background"
+layer_0/tile_data = PackedInt32Array(262145, 262144, 10, 327681, 262144, 11, 262146, 327680, 10, 327682, 327680, 11, 327679, 262144, 10, 393215, 262144, 11, 262144, 327680, 10, 327680, 327680, 11, 196607, 262144, 10, 262143, 262144, 11, 131072, 327680, 10, 196608, 327680, 11, 131073, 262144, 10, 196609, 262144, 11, 131074, 327680, 10, 196610, 327680, 11)
+
+[node name="Player" parent="." node_paths=PackedStringArray("tileMapsNode") instance=ExtResource("2_b8k81")]
+z_index = 1
 position = Vector2(78, 35)
-collision_layer = 3
+collision_mask = 1
 groundFriction = 400.0
 maxTurnSpeed = 400.0
+tileMapsNode = NodePath("../TileMaps")
 
 [node name="RemoteTransform2D" type="RemoteTransform2D" parent="Player"]
 remote_path = NodePath("../../Camera2D")
@@ -44,11 +52,4 @@ drag_vertical_enabled = true
 script = ExtResource("3_qj7lo")
 zoomDelta = 0.15
 
-[node name="TileMap2" type="TileMap" parent="."]
-z_index = -1
-tile_set = ExtResource("1_tyetv")
-format = 2
-layer_0/name = "Background"
-layer_0/tile_data = PackedInt32Array(262145, 262144, 10, 327681, 262144, 11, 262146, 327680, 10, 327682, 327680, 11, 327679, 262144, 10, 393215, 262144, 11, 262144, 327680, 10, 327680, 327680, 11, 196607, 262144, 10, 262143, 262144, 11, 131072, 327680, 10, 196608, 327680, 11, 131073, 262144, 10, 196609, 262144, 11, 131074, 327680, 10, 196610, 327680, 11)
-
-[connection signal="playerTouchingBackground" from="TileMap" to="Player" method="_on_tile_map_player_touching_background"]
+[connection signal="playerTouchingBackground" from="TileMaps/GroundTileMap" to="Player" method="_on_tile_map_player_touching_background"]
