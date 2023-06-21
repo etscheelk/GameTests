@@ -25,6 +25,9 @@ extends CharacterBody2D
 
 @onready var tileMap : TileMap = $"../TileMap"
 
+# z_index controls tile and player draw. Lower means more behind. Make sure to check the player is in front
+# Must also consider collision_layer and mask
+
 var canClimb : bool = false
 @onready var wallClimbTimer : Timer = $"(Timer) WallClimbing"
 
@@ -89,6 +92,7 @@ func _physics_process(delta):
 	# Retrieve the tilemap coordinate at the players center
 	var tileMapCoord : Vector2i = tileMap.local_to_map(position)
 	
+	# layer, coord
 	var tile : TileData = tileMap.get_cell_tile_data(1, tileMapCoord)
 	
 	canClimb = tile != null
@@ -142,9 +146,12 @@ func move() -> void:
 func climb() -> void:
 	if wallClimbTimer.is_stopped() and is_on_floor():
 		wallClimbTimer.start()
+		return
+	
 	
 	
 #	position.y -= 20
+	velocity.x = 0
 	velocity.y = -20
 	
 	pass

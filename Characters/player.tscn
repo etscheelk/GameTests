@@ -299,6 +299,7 @@ height = 44.0
 [sub_resource type="AnimationRootNode" id="AnimationRootNode_q3ubg"]
 
 [node name="Player" type="CharacterBody2D"]
+collision_mask = 2
 script = ExtResource("1_oe8ln")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
@@ -323,5 +324,11 @@ anim_player = NodePath("../AnimationPlayer")
 [node name="(Timer) WallClimbing" type="Timer" parent="."]
 wait_time = 0.5
 one_shot = true
+
+[node name="Feet Marker2D" type="Marker2D" parent="."]
+position = Vector2(0, 24)
+
+[node name="Hands Marker2D" type="Marker2D" parent="."]
+position = Vector2(8, 3)
 
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]

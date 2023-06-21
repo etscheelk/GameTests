@@ -7,6 +7,8 @@
 
 [node name="TestLevel" type="Node2D"]
 
+[node name="Tilemaps" type="Node" parent="."]
+
 [node name="TileMap" type="TileMap" parent="." node_paths=PackedStringArray("pos")]
 position = Vector2(32, -32)
 tile_set = ExtResource("1_tyetv")
