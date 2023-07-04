@@ -23,6 +23,12 @@ extends CharacterBody2D
 @onready var animated_sprite : AnimatedSprite2D = $AnimatedSprite2D
 @onready var collider : CollisionShape2D = $CollisionShape2D
 
+@onready var weapon : Node2D = $Weapon
+var mousePos : Vector2
+@onready var weaponRadius = weapon.position.length()
+
+var facingRight : bool = true
+
 @onready var feetMarker : Vector2 = $"HandsMarker2D".position
 
 @export var tileMapsNode : Node
@@ -66,6 +72,8 @@ func _process(delta):
 	desiredVelocity.x = sign(inputDirection.x) * 100
 	if sprinting:
 		desiredVelocity.x *= 2
+		
+	mousePos = get_local_mouse_position()
 
 
 func _physics_process(delta):
@@ -104,7 +112,7 @@ func _physics_process(delta):
 	var tile : TileData = groundTileMap.get_cell_tile_data(1, tileMapCoord)
 	
 	canClimb = tile != null
-	print(canClimb)
+#	print(canClimb)
 	
 
 	# Get the input inputDirection and handle the movement/deceleration.
@@ -124,6 +132,23 @@ func _physics_process(delta):
 	move_and_slide()
 	update_animation()
 	update_facing_inputDirection()
+	aimWeapon()
+	
+
+# Called once per physics frame, angle the weapon based on mouse look location
+func aimWeapon() -> void:
+	if (weapon == null):
+		return
+	
+	var pos : Vector2 = mousePos.normalized() * weaponRadius
+	var angle = pos.angle()
+	
+#	print(angle)
+#	weapon.position.x = move_toward(weapon.position.x, pos.x, 1.5)
+#	weapon.position.y = move_toward(weapon.position.y, pos.y, 1.5)
+	weapon.position = pos
+#	weapon.rotation = move_toward(weapon.rotation, angle, 0.5)
+	weapon.rotation = lerp_angle(weapon.rotation, angle, 0.5)
 	
 
 func move() -> void:
@@ -150,7 +175,7 @@ func move() -> void:
 	velocity.x = move_toward(velocity.x, desiredVelocity.x, speedDelta)
 	
 #	print(velocity)
-	
+
 func climb() -> void:
 	if wallClimbTimer.is_stopped() and is_on_floor():
 		wallClimbTimer.start()
@@ -178,11 +203,23 @@ func update_animation() -> void:
 	
 	
 func update_facing_inputDirection() -> void:
-	if inputDirection.x > 0:
-		animated_sprite.flip_h = false
-	elif inputDirection.x < 0:
-		animated_sprite.flip_h = true
+	if facingRight and inputDirection.x < 0:
+		facingRight = false
+		scale.x *= -1
+	elif not facingRight and inputDirection.x > 0:
+		facingRight = true
+		scale.x *= -1
 	
+#	print(scale)
+#	if inputDirection.x > 0:
+##		animated_sprite.flip_h = false
+#		scale.x = 1
+#	elif inputDirection.x < 0:
+#		if (scale.x == 1):
+#			scale.x = -1 
+##		animated_sprite.flip_h = true
+##		scale.x = -1
+		
 		
 func jump() -> void:
 	velocity.y = jump_velocity
