@@ -41,6 +41,7 @@ maxTurnSpeed = 400.0
 tileMapsNode = NodePath("../TileMaps")
 
 [node name="RemoteTransform2D" type="RemoteTransform2D" parent="Player"]
+visible = false
 remote_path = NodePath("../../Camera2D")
 
 [node name="Camera2D" type="Camera2D" parent="."]

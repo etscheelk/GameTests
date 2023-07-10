@@ -357,6 +357,5 @@ collision_mask = 0
 position = Vector2(8.5, -0.5)
 shape = SubResource("RectangleShape2D_22wyu")
 disabled = true
-debug_color = Color(0, 0.6, 0.701961, 0.419608)
 
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
