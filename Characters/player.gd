@@ -24,8 +24,9 @@ extends CharacterBody2D
 @onready var collider : CollisionShape2D = $CollisionShape2D
 
 @onready var weapon : Node2D = $Weapon
-var mousePos : Vector2
+@onready var actualWeapon = weapon.get_child(0)
 @onready var weaponRadius = weapon.position.length()
+var mousePos : Vector2
 
 var facingRight : bool = true
 
@@ -56,7 +57,6 @@ enum states {IDLE, RUNNING, JUMPING, MANTLING}
 var state : states = states.IDLE
 
 var sprinting : bool = false
-
 
 func _ready():
 	if tileMapsNode:
@@ -127,6 +127,9 @@ func _physics_process(delta):
 #	accel(Vector2(inputDirection.x, 0), 320, 500)
 	
 #	velocity.x = move_toward(velocity.x, 0, walkSpeed)
+	if Input.is_action_just_pressed("fire"):
+		actualWeapon.attack()
+
 
 	move()
 	move_and_slide()
@@ -137,7 +140,7 @@ func _physics_process(delta):
 
 # Called once per physics frame, angle the weapon based on mouse look location
 func aimWeapon() -> void:
-	if (weapon == null):
+	if (actualWeapon == null):
 		return
 	
 	var pos : Vector2 = mousePos.normalized() * weaponRadius
@@ -146,9 +149,9 @@ func aimWeapon() -> void:
 #	print(angle)
 #	weapon.position.x = move_toward(weapon.position.x, pos.x, 1.5)
 #	weapon.position.y = move_toward(weapon.position.y, pos.y, 1.5)
-	weapon.position = pos
+	actualWeapon.position = pos
 #	weapon.rotation = move_toward(weapon.rotation, angle, 0.5)
-	weapon.rotation = lerp_angle(weapon.rotation, angle, 0.5)
+	actualWeapon.rotation = lerp_angle(actualWeapon.rotation, angle, 0.5)
 	
 
 func move() -> void:
