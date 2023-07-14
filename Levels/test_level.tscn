@@ -51,6 +51,7 @@ position_smoothing_enabled = true
 drag_horizontal_enabled = true
 drag_vertical_enabled = true
 script = ExtResource("3_qj7lo")
+minZoom = 0.25
 zoomDelta = 0.15
 
 [connection signal="playerTouchingBackground" from="TileMaps/GroundTileMap" to="Player" method="_on_tile_map_player_touching_background"]

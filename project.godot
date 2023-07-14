@@ -74,6 +74,7 @@ fire={
 [layer_names]
 
 2d_physics/layer_6="weapon"
+2d_physics/layer_7="playerDamageSource"
 
 [physics]
 

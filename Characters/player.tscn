@@ -6,9 +6,9 @@
 [ext_resource type="Texture2D" uid="uid://g2mdrvgpr71q" path="res://art/Legacy-Fantasy - High Forest 2.3/Character/Jump-Start/Jump-Start-Sheet.png" id="4_stcce"]
 [ext_resource type="Texture2D" uid="uid://o8hfxmbb41b2" path="res://art/Legacy-Fantasy - High Forest 2.3/Character/Jumlp-All/Jump-All-Sheet.png" id="5_7qxb5"]
 [ext_resource type="Texture2D" uid="uid://bkrek5lmetpv2" path="res://art/Legacy-Fantasy - High Forest 2.3/Character/Run/Run-Sheet.png" id="6_itw0w"]
-[ext_resource type="Script" path="res://Characters/Knife.gd" id="7_53tw5"]
+[ext_resource type="Script" path="res://Characters/Gun.gd" id="7_t2f57"]
 [ext_resource type="Texture2D" uid="uid://8o3edew8as8m" path="res://art/testGun.png" id="8_0faga"]
-[ext_resource type="PackedScene" uid="uid://jp1dq03p2od0" path="res://bullet.tscn" id="8_svjvf"]
+[ext_resource type="PackedScene" uid="uid://bcvb1smrhs1ww" path="res://bullet.tscn" id="8_svjvf"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_3ktcx"]
 atlas = ExtResource("1_s1uj8")
@@ -339,16 +339,16 @@ position = Vector2(0, 21)
 position = Vector2(8, 3)
 
 [node name="Weapon" type="Node2D" parent="."]
-position = Vector2(8, 0)
 
 [node name="Gun" type="Node2D" parent="Weapon"]
-script = ExtResource("7_53tw5")
+position = Vector2(12, 0)
+script = ExtResource("7_t2f57")
 bullet = ExtResource("8_svjvf")
 
 [node name="TextureRect" type="TextureRect" parent="Weapon/Gun"]
-offset_left = -6.0
+offset_left = -11.0
 offset_top = -21.0
-offset_right = 36.0
+offset_right = 31.0
 offset_bottom = 21.0
 texture = ExtResource("8_0faga")
 expand_mode = 1
@@ -372,6 +372,6 @@ shape = SubResource("RectangleShape2D_22wyu")
 disabled = true
 
 [node name="bulletSpawn" type="Marker2D" parent="Weapon/Gun"]
-position = Vector2(28, -2)
+position = Vector2(23, -2)
 
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]

@@ -23,9 +23,9 @@ extends CharacterBody2D
 @onready var animated_sprite : AnimatedSprite2D = $AnimatedSprite2D
 @onready var collider : CollisionShape2D = $CollisionShape2D
 
-@onready var weapon : Node2D = $Weapon
-@onready var actualWeapon = weapon.get_child(0)
-@onready var weaponRadius = weapon.position.length()
+@onready var weaponSlot : Node2D = $Weapon
+@onready var actualWeapon = weaponSlot.get_child(0)
+@onready var weaponRadius = actualWeapon.position.length()
 var mousePos : Vector2
 
 var facingRight : bool = true
@@ -132,7 +132,6 @@ func _physics_process(delta):
 
 
 	move()
-	move_and_slide()
 	update_animation()
 	update_facing_inputDirection()
 	aimWeapon()
@@ -146,12 +145,13 @@ func aimWeapon() -> void:
 	var pos : Vector2 = mousePos.normalized() * weaponRadius
 	var angle = pos.angle()
 	
-#	print(angle)
+	actualWeapon.position = pos
+	actualWeapon.rotation = lerp_angle(actualWeapon.rotation, angle, 0.5)
+
+#   Don't use these ones 
 #	weapon.position.x = move_toward(weapon.position.x, pos.x, 1.5)
 #	weapon.position.y = move_toward(weapon.position.y, pos.y, 1.5)
-	actualWeapon.position = pos
 #	weapon.rotation = move_toward(weapon.rotation, angle, 0.5)
-	actualWeapon.rotation = lerp_angle(actualWeapon.rotation, angle, 0.5)
 	
 
 func move() -> void:
@@ -176,8 +176,7 @@ func move() -> void:
 		speedDelta = deceleration * deltaFrameTime
 		
 	velocity.x = move_toward(velocity.x, desiredVelocity.x, speedDelta)
-	
-#	print(velocity)
+	move_and_slide()
 
 func climb() -> void:
 	if wallClimbTimer.is_stopped() and is_on_floor():
@@ -208,10 +207,12 @@ func update_animation() -> void:
 func update_facing_inputDirection() -> void:
 	if facingRight and inputDirection.x < 0:
 		facingRight = false
-		scale.x *= -1
+#		scale.x *= -1
+		animated_sprite.flip_h = true
 	elif not facingRight and inputDirection.x > 0:
 		facingRight = true
-		scale.x *= -1
+		animated_sprite.flip_h = false
+#		scale.x *= -1
 	
 #	print(scale)
 #	if inputDirection.x > 0:
